@@ -1412,7 +1412,7 @@ class core_course_renderer extends plugin_renderer_base {
      *
      * @return string
      */
-    public function frontpage_available_courses() {
+    public function frontpage_available_courses($catids=array(0)) {
         global $CFG;
 
         $chelper = new coursecat_helper();
@@ -1424,8 +1424,17 @@ class core_course_renderer extends plugin_renderer_base {
                     'viewmoretext' => new lang_string('fulllistofcourses')));
 
         $chelper->set_attributes(array('class' => 'frontpage-course-list-all'));
-        $courses = core_course_category::top()->get_courses($chelper->get_courses_display_options());
+        $courses = [];
+        if(in_array(0, $catids) || is_siteadmin()){
+        $courses = array_merge($courses,core_course_category::top()->get_courses($chelper->get_courses_display_options()));
         $totalcount = core_course_category::top()->get_courses_count($chelper->get_courses_display_options());
+        }
+     else{
+        foreach($catids as $catid){
+        $courses += array_merge($courses,core_course_category::get($catid)->get_courses($chelper->get_courses_display_options()));
+        $totalcount += core_course_category::get($catid)->get_courses_count($chelper->get_courses_display_options());
+        }
+     }
         if (!$totalcount && !$this->page->user_is_editing() && has_capability('moodle/course:create', context_system::instance())) {
             // Print link to create a new course, for the 1st available category.
             return $this->add_new_course_button();
@@ -1674,7 +1683,7 @@ class core_course_renderer extends plugin_renderer_base {
      * @return string
      */
     public function frontpage() {
-        global $CFG, $SITE;
+        global $CFG, $SITE, $USER;
 
         $output = '';
 
@@ -1709,7 +1718,12 @@ class core_course_renderer extends plugin_renderer_base {
                     break;
 
                 case FRONTPAGEALLCOURSELIST:
-                    $availablecourseshtml = $this->frontpage_available_courses();
+                    echo $USER->department;
+                    if (!empty($USER->profile_field_designation)) {
+ echo $USER->profile_field_designation;
+}
+                    $catids = array(1);
+                    $availablecourseshtml = $this->frontpage_available_courses($catids);
                     $output .= $this->frontpage_part('skipavailablecourses', 'frontpage-available-course-list',
                         get_string('availablecourses'), $availablecourseshtml);
                     break;
