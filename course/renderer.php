@@ -1425,6 +1425,7 @@ class core_course_renderer extends plugin_renderer_base {
 
         $chelper->set_attributes(array('class' => 'frontpage-course-list-all'));
         $courses = [];
+        $totalcount = 0;
         if(in_array(0, $catids) || is_siteadmin()){
         $courses = array_merge($courses,core_course_category::top()->get_courses($chelper->get_courses_display_options()));
         $totalcount = core_course_category::top()->get_courses_count($chelper->get_courses_display_options());
@@ -1683,7 +1684,7 @@ class core_course_renderer extends plugin_renderer_base {
      * @return string
      */
     public function frontpage() {
-        global $CFG, $SITE, $USER;
+        global $CFG, $SITE, $USER, $DB;
 
         $output = '';
 
@@ -1718,12 +1719,16 @@ class core_course_renderer extends plugin_renderer_base {
                     break;
 
                 case FRONTPAGEALLCOURSELIST:
-                    echo $USER->department;
-                    if (!empty($USER->profile_field_designation)) {
- echo $USER->profile_field_designation;
-}
-                    $catids = array(1);
-                    $availablecourseshtml = $this->frontpage_available_courses($catids);
+                    profile_load_data($USER);
+                    if(empty($USER->profile_field_department)) {
+                        $USER->profile_field_department = 0;
+                    }
+                    $sql = "SELECT id FROM `mdl_course_categories` WHERE idnumber = $USER->profile_field_department";
+                    if(!empty($USER->profile_field_designation)) {
+                        $sql .= " or idnumber = $USER->profile_field_designation";
+                    }
+                    $catids = $DB->get_records_sql_menu($sql);
+                    $availablecourseshtml = $this->frontpage_available_courses(array_keys($catids));
                     $output .= $this->frontpage_part('skipavailablecourses', 'frontpage-available-course-list',
                         get_string('availablecourses'), $availablecourseshtml);
                     break;
