@@ -1720,15 +1720,16 @@ class core_course_renderer extends plugin_renderer_base {
 
                 case FRONTPAGEALLCOURSELIST:
                     profile_load_data($USER);
-                    if(empty($USER->profile_field_department)) {
-                        $USER->profile_field_department = 0;
-                    }
+                    if(empty($USER->profile_field_department) || ($USER->profile_field_department == 0)) {
+                        $catids = [0];
+                    }else{
                     $sql = "SELECT id FROM `mdl_course_categories` WHERE idnumber = $USER->profile_field_department";
                     if(!empty($USER->profile_field_designation)) {
                         $sql .= " or idnumber = $USER->profile_field_designation";
                     }
-                    $catids = $DB->get_records_sql_menu($sql);
-                    $availablecourseshtml = $this->frontpage_available_courses(array_keys($catids));
+                    $catids = array_keys($DB->get_records_sql_menu($sql));
+                    }
+                    $availablecourseshtml = $this->frontpage_available_courses($catids);
                     $output .= $this->frontpage_part('skipavailablecourses', 'frontpage-available-course-list',
                         get_string('availablecourses'), $availablecourseshtml);
                     break;
