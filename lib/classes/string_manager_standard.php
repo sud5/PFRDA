@@ -205,7 +205,41 @@ class core_string_manager_standard implements core_string_manager {
         if (!$disablelocal) {
             // Now we have a list of strings from all possible sources,
             // cache it in MUC cache if not already there.
+//            if ($cachedstring === false) {
+//                $this->cache->set($cachekey, $string);
+//            }
+            
             if ($cachedstring === false) {
+               
+                               global $DB;
+                $lang = current_language();
+                  if (!empty($CFG->version)) {
+                         $allow = $DB->get_field('config', 'value', array('name' => "bsr_active_$lang"));
+                          if ($allow) {
+                              $stringvalues = $DB->get_field('config', 'value', array('name' => "replacestring_$lang"));
+                               $stringvalues = trim($stringvalues);
+                                  if ($stringvalues) {
+                                       $newline = (explode("\n", $stringvalues));
+                                       foreach ($newline as $v) {
+                                        $colonarray = explode(":", $v);
+                                    if (isset($colonarray[1])) {
+                                    $data[trim($colonarray[0])] = trim($colonarray[1]);
+                                }
+                        }
+                                  }
+                          }
+            if (!empty($data) && !empty($string)) {
+                foreach ($data as $k => &$v) {
+                    if (ctype_upper(substr($k, 0, 1))) {
+                        $string = preg_replace('/\b' . $k . '\b/', $v, $string);
+                    } else if (ctype_lower($k)) {
+                        $string = preg_replace('/ ' . $k . '\b/', ' ' . $v, $string);
+                    } else {
+                        $string = preg_replace('/\b' . $k . '\b/u', $v, $string);
+                    }
+                }
+   }
+ } //else
                 $this->cache->set($cachekey, $string);
             }
         }
