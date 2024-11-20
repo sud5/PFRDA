@@ -343,32 +343,40 @@ class enrol_apply_plugin extends enrol_plugin {
         }
     }
 
-    public function wait_enrolment($enrols) {
+//    public function wait_enrolment($enrols) {
+//        global $DB;
+//        foreach ($enrols as $enrol) {
+//            $userenrolment = $DB->get_record(
+//                'user_enrolments',
+//                array('id' => $enrol, 'status' => ENROL_USER_SUSPENDED),
+//                '*', IGNORE_MISSING);
+//
+//            if ($userenrolment != null) {
+//                $instance = $DB->get_record('enrol', array('id' => $userenrolment->enrolid, 'enrol' => 'apply'), '*', MUST_EXIST);
+//
+//                // Check privileges.
+//                $context = context_course::instance($instance->courseid, MUST_EXIST);
+//                if (!has_capability('enrol/apply:manageapplications', $context)) {
+//                    continue;
+//                }
+//
+//                $this->update_user_enrol($instance, $userenrolment->userid, ENROL_APPLY_USER_WAIT);
+//
+//                $this->notify_applicant(
+//                    $instance,
+//                    $userenrolment,
+//                    'waitinglist',
+//                    get_config('enrol_apply', 'waitmailsubject'),
+//                    get_config('enrol_apply', 'waitmailcontent'));
+//            }
+//        }
+//    }
+    
+        public function wait_enrolment($enrols) {
         global $DB;
         foreach ($enrols as $enrol) {
-            $userenrolment = $DB->get_record(
-                'user_enrolments',
-                array('id' => $enrol, 'status' => ENROL_USER_SUSPENDED),
-                '*', IGNORE_MISSING);
-
-            if ($userenrolment != null) {
-                $instance = $DB->get_record('enrol', array('id' => $userenrolment->enrolid, 'enrol' => 'apply'), '*', MUST_EXIST);
-
-                // Check privileges.
-                $context = context_course::instance($instance->courseid, MUST_EXIST);
-                if (!has_capability('enrol/apply:manageapplications', $context)) {
-                    continue;
-                }
-
-                $this->update_user_enrol($instance, $userenrolment->userid, ENROL_APPLY_USER_WAIT);
-
-                $this->notify_applicant(
-                    $instance,
-                    $userenrolment,
-                    'waitinglist',
-                    get_config('enrol_apply', 'waitmailsubject'),
-                    get_config('enrol_apply', 'waitmailcontent'));
-            }
+             $sql = "UPDATE {enrol_apply_applicationinfo} SET teacherapproval = 1 where userenrolmentid = $enrol";
+             $DB->execute($sql);
         }
     }
 
@@ -641,5 +649,9 @@ class enrol_apply_plugin extends enrol_plugin {
         $trace = new text_progress_trace();
         $this->process_expirations($trace);
     }
-
+    
 }
+   function can_approve_final(){
+        $status = is_siteadmin() ? true : false;
+        return $status;
+    }

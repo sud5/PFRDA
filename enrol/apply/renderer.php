@@ -51,11 +51,18 @@ class enrol_apply_renderer extends plugin_renderer_base {
         if ($table->totalrows > 0) {
             echo html_writer::empty_tag('br');
             echo html_writer::start_tag('div', array('class' => 'formaction'));
-
-            $formactions = array(
+            
+            global $CFG;
+            require_once($CFG->dirroot.'/enrol/apply/lib.php');
+            if(can_approve_final()){
+              $formactions = array(
                 'confirm' => get_string('btnconfirm', 'enrol_apply'),
+                'cancel' => get_string('btncancel', 'enrol_apply'));  
+            }else{
+            $formactions = array(
                 'wait' => get_string('btnwait', 'enrol_apply'),
                 'cancel' => get_string('btncancel', 'enrol_apply'));
+            }
             echo html_writer::tag('label', get_string('withselectedusers'), array('for' => 'formaction'));
             echo html_writer::select($formactions, 'formaction', '', array('' => 'choosedots'), array('id' => 'formaction'));
             echo html_writer::tag('noscript',

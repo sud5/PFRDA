@@ -2511,3 +2511,4 @@ $string['coursesearch_help'] = 'You can search for multiple words at once and ca
 * word - find any match of this word within the text
 * +word - only exact matching words will be found
 * -word - don\'t include results containing this word.';
+$string['nopast_date'] = 'No past date is allowed';

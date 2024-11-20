@@ -7,3 +7,18 @@
 .videotime-embed .vjs-layout-huge {
     width: 100%;
 }
+.videotime-embed .vjs-control-bar .vjs-progress-control{
+    display: none;
+}
+.videotime-embed .vjs-control-bar .vjs-picture-in-picture-control{
+    display: none;
+}
+.videotime-embed .vjs-control-bar .vjs-playback-rate{
+    display: none;
+}
+.videotime-embed .vjs-control-bar .vjs-fullscreen-control{
+    margin-left:auto;
+}
+.videotime-embed .vjs-control-bar .vjs-remaining-time{
+    margin-left:auto;
+}

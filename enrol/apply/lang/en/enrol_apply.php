@@ -73,7 +73,8 @@ $string['applyuser'] = 'First name / Surname';
 $string['applyusermail'] = 'Email';
 $string['applydate'] = 'Enrol date';
 $string['btnconfirm'] = 'Confirm requests';
-$string['btnwait'] = 'Defer requests';
+//$string['btnwait'] = 'Defer requests';
+$string['btnwait'] = 'Send to admin to approve';
 $string['btncancel'] = 'Cancel requests';
 $string['enrolusers'] = 'Enrol users';
 

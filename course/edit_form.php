@@ -198,6 +198,7 @@ class course_edit_form extends moodleform {
             $mform->hardFreeze('idnumber');
             $mform->setConstants('idnumber', $course->idnumber);
         }
+        $mform->setDefault('idnumber', $this->get_id_number());
 
         // Description.
         $mform->addElement('header', 'descriptionhdr', get_string('description'));
@@ -558,6 +559,14 @@ class course_edit_form extends moodleform {
         if (!empty($pluginerrors)) {
             $errors = array_merge($errors, $pluginerrors);
         }
+        
+        if($data['startdate'] < time()){
+            $errors['startdate'] = get_string('nopast_date');
+        }
+        
+        if($data['enddate'] < time()){
+            $errors['enddate'] = get_string('nopast_date');
+        }
 
         return $errors;
     }
@@ -578,5 +587,15 @@ class course_edit_form extends moodleform {
      */
     public function get_context(): \core\context {
         return $this->context;
+    }
+    
+    private function get_id_number() {
+        global $PAGE,$CFG;
+        $characters = '123456789';
+        $randstring = '';
+        for ($i = 0; $i < 8; $i++) {
+            $randstring .= $characters[rand(0, strlen($characters))];
+        }
+        return $randstring;
     }
 }

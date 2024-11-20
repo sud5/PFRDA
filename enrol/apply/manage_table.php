@@ -30,12 +30,16 @@ class enrol_apply_manage_table extends table_sql {
 
     public $is_collapsible = false;
 
-    public function __construct($enrolid = null) {
+    public function __construct($enrolid = null,$teacher =false) {
         parent::__construct('enrol_apply_manage_table');
 
         global $DB;
-
-        $sqlwhere = 'ue.status != 0';
+       
+        if($teacher){
+        $sqlwhere = 'ue.status != 0 AND teacherapproval = 0';    
+        }else{
+        $sqlwhere = 'ue.status != 0 AND teacherapproval = 1';
+        }
         $sqlparams = array();
         if ($enrolid != null) {
             $sqlwhere .= " AND e.id = :enrolid";

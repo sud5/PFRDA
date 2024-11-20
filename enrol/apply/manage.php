@@ -74,8 +74,12 @@ if ($formaction != null && $userenrolments != null) {
     }
     redirect($manageurl);
 }
-
+if(can_approve_final()){
 $table = new enrol_apply_manage_table($id);
+}else{
+ $table = new enrol_apply_manage_table($id,true);
+}
+
 $table->define_baseurl($manageurl);
 
 $renderer = $PAGE->get_renderer('enrol_apply');
